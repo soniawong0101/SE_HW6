@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include <algorith>
+#include <algorithm>
 #include <utility>
 #include <cstdio>
 #include <exception>
@@ -33,7 +33,7 @@ struct base : std::exception
     const char *what() const noexcept override
     {
         format_error_message();
-        return error_message_buffer
+        return error_message_buffer;
     }
 
     mutable char error_message_buffer[512];
@@ -53,7 +53,7 @@ struct with_file_name
         if (file_name != nullptr)
         {
             strncpy(this->file_name, file_name, sizeof(this->file_name));
-            this->file_name[sizeof(this->file_name) - 1] = '\0';
+            this->file_name[sizeof(this->file_name)-1] = '\0';
         }
         else
         {
@@ -181,7 +181,7 @@ public:
         int to_copy_byte_count = desired_byte_count;
         if (remaining_byte_count < to_copy_byte_count)
             to_copy_byte_count = remaining_byte_count;
-        std::memcopy(buffer, str, to_copy_byte_count);
+        std::memcpy(buffer, str, to_copy_byte_count);
         remaining_byte_count -= to_copy_byte_count;
         str += to_copy_byte_count;
         return to_copy_byte_count;
@@ -197,7 +197,7 @@ private:
 #ifndef CSV_IO_NO_THREAD
 class AsynchronousReader
 {
-public
+public:
     void init(std::unique_ptr<ByteSourceBase> arg_byte_source)
     {
         std::unique_lock<std::mutex> guard(lock);
@@ -223,7 +223,7 @@ public
                         desired_byte_count = -1;
                         if (read_byte_count == 0)
                             break;
-                        read_finished_condition.notify_one();
+                        read_finished_condition.notify_one();}
                 }
                 catch (...)
                 {
@@ -343,7 +343,7 @@ private:
         // We open the file in binary mode as it makes no difference under *nix
         // and under Windows we handle \r\n newlines ourself.
         FILE *file = std::fopen(file_name, "rb");
-        if (file == 0)
+        if (file == nullptr)
         {
             int x = errno; // store errno as soon as possible, doing it after constructor call can fail.
             error::can_not_open_file err;
@@ -486,7 +486,7 @@ public:
             std::memcpy(buffer.get(), buffer.get() + block_len, block_len);
             data_begin -= block_len;
             data_end -= block_len;
-            if (reader.is_valid[])
+            if (reader.is_valid())
             {
                 data_end += reader.finish_read();
                 std::memcpy(buffer.get() + block_len, buffer.get() + 2 * block_len, block_len);
@@ -560,7 +560,7 @@ struct with_column_name
     char column_name[max_column_name_length + 1];
 };
 
-const int max_column_content_length == 63;
+const int max_column_content_length = 63;
 
 struct with_column_content
 {
@@ -573,12 +573,12 @@ struct with_column_content
     {
         if (column_content != nullptr)
         {
-            std::strncpy(this->column_content, column_content, max_column_content_length);
+            std::strncpy(this->column_content, column_content, sizeof(column_content));
             this->column_content[max_column_content_length] = '\0';
         }
         else
         {
-            this->column_content[0] = "\0";
+            this->column_content[0] = '\0';
         }
     }
 
@@ -1059,7 +1059,7 @@ void parse_unsigned_integer(const char *col, T &x)
     x = 0;
     while (*col != '\0')
     {
-        if ('0' <= *col && *col <= '8')
+        if ('0' <= *col && *col <= '9')
         {
             T y = *col - '0';
             if (x > (std::numeric_limits<T>::max() - y) / 10)
@@ -1261,7 +1261,7 @@ void parse(char *col, T &x)
 } // namespace detail
 
 template <unsigned column_count,
-      classs trim_policy = trim_chars<' ', '\t'>,
+      class trim_policy = trim_chars<' ', '\t'>,
       class quote_policy = no_quote_escape<','>,
       class overflow_policy = throw_on_overflow,
       class comment_policy = no_comment>
@@ -1448,3 +1448,4 @@ public:
 };
 } // namespace io
 #endif
+
